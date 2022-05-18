@@ -1,0 +1,77 @@
+.apple {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
+
+.leaf {
+    position: absolute;
+    width: 2px;
+    height: 5px;
+    top: 4px;
+    left: 13px;
+    background-color: rgb(2, 205, 2);
+}
+
+.top1 {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 6px;
+    left: 5px;
+    border-radius: 50%;
+    background-color: rgb(225, 1, 1);
+}
+
+.top2 {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 6px;
+    right: 5px;
+    border-radius: 50%;
+    background-color: rgb(225, 1, 1);
+}
+
+.bottom1 {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    bottom: 8px;
+    left: 6.6px;
+    border-radius: 50%;
+    background-color: rgb(225, 1, 1);
+}
+
+.bottom2 {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    bottom: 8px;
+    right: 6.6px;
+    border-radius: 50%;
+    background-color: rgb(225, 1, 1);
+}
+
+.left {
+    position: absolute;
+    width: 2px;
+    height: 7px;
+    top: 12px;
+    left: 6px;
+    transform: rotate(-14deg);
+    background-color: rgb(225, 1, 1);
+}
+
+.right {
+    position: absolute;
+    width: 2px;
+    height: 7px;
+    top: 12px;
+    right: 6px;
+    transform: rotate(14deg);
+    background-color: rgb(225, 1, 1);
+}

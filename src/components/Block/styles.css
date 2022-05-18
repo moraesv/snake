@@ -1,0 +1,11 @@
+.block {
+    background-color: rgb(99, 43, 1);
+    border-color: rgb(57, 25, 0);
+    border-width: 1px;
+    border-style: solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+}
