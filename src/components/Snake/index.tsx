@@ -1,11 +1,15 @@
-import './styles.css';
+import "./styles.css"
 
-function Snake() {
-    return (
-        <div className="snake" data-testid="snake">
-            <div className="body"></div>
-        </div>
-    );
+interface SnakeProps {
+	active?: boolean
 }
 
-export default Snake;
+function Snake({ active }: SnakeProps) {
+	return (
+		<div className="snake" data-testid="snake">
+			<div className={"body " + (active ? "body-active" : "")}></div>
+		</div>
+	)
+}
+
+export default Snake
