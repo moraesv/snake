@@ -1,28 +1,28 @@
 import { useEffect } from "react"
 import "./App.css"
 import Block from "./components/Block"
+import useCreateApple from "./hooks/useCreateApple"
 import useCreateBlocks from "./hooks/useCreateBlocks"
 import useCreateSnake from "./hooks/useCreateSnake"
 
 function App() {
-	const { blocks, randomApple, removeApple, initSnake, setSnakePositions } =
-		useCreateBlocks()
-	const { snake, useInitSnakeStep, getSnakePositions } = useCreateSnake()
+	const { blocks, setSnakePositions, setApplePosition } = useCreateBlocks()
+	const { useInitSnakeStep, useHandleInput, getSnakePositions } =
+		useCreateSnake()
+	const { getApplePosition, useInitApple } = useCreateApple()
 
-	useEffect(() => {
-		randomApple()
-		return () => removeApple()
-	}, [randomApple, removeApple])
+	// useInitApple()
 
-	useEffect(() => {
-		initSnake()
-	}, [initSnake])
+	useInitSnakeStep()
+	useHandleInput()
 
 	useEffect(() => {
 		setSnakePositions(getSnakePositions())
 	}, [setSnakePositions, getSnakePositions])
 
-	useInitSnakeStep()
+	useEffect(() => {
+		setApplePosition(getApplePosition())
+	}, [setApplePosition, getApplePosition])
 
 	return (
 		<div className="App" data-testid="app">

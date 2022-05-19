@@ -11,12 +11,6 @@ export default function useCreateBlocks() {
 	const [blocks, setBlocks] = useState(initialblocks)
 	const [appleIndex, setAppleIndex] = useState<number | null>(null)
 
-	document.addEventListener("keydown", function (event) {
-		if (event.keyCode === 37) {
-		} else if (event.keyCode === 39) {
-		}
-	})
-
 	const randomApple = useCallback(() => {
 		const appleBlock = Math.floor(Math.random() * totalBlocks - 1)
 		setAppleIndex(appleBlock)
@@ -36,14 +30,6 @@ export default function useCreateBlocks() {
 		})
 	}, [])
 
-	const initSnake = useCallback(() => {
-		setBlocks((prev) =>
-			prev.map((block, index) =>
-				index === 0 ? { ...block, snake: true } : block
-			)
-		)
-	}, [setBlocks])
-
 	const setSnakePositions = useCallback(
 		(positions: number[]) => {
 			setBlocks((prev) =>
@@ -57,12 +43,25 @@ export default function useCreateBlocks() {
 		[setBlocks]
 	)
 
+	const setApplePosition = useCallback(
+		(position: number | null) => {
+			setBlocks((prev) =>
+				prev.map((block, index) =>
+					index === position
+						? { ...block, apple: true }
+						: { ...block, apple: false }
+				)
+			)
+		},
+		[setBlocks]
+	)
+
 	return {
 		blocks,
 		appleIndex,
 		randomApple,
 		removeApple,
-		initSnake,
 		setSnakePositions,
+		setApplePosition,
 	}
 }
