@@ -6,33 +6,30 @@ import useCreateBlocks from "./hooks/useCreateBlocks"
 import useCreateSnake from "./hooks/useCreateSnake"
 
 function App() {
-	const { blocks, setSnakePositions, setApplePosition } = useCreateBlocks()
-	const { useInitSnakeStep, useHandleInput, getSnakePositions } =
-		useCreateSnake()
-	const { getApplePosition, useInitApple } = useCreateApple()
+  const { blocks, setSnakePositions, setApplePosition } = useCreateBlocks()
+  const { getSnakePositions } =
+    useCreateSnake()
+  const { getApplePosition } = useCreateApple()
 
-	// useInitApple()
+  // useInitApple()
 
-	useInitSnakeStep()
-	useHandleInput()
+  useEffect(() => {
+    setSnakePositions(getSnakePositions())
+  }, [setSnakePositions, getSnakePositions])
 
-	useEffect(() => {
-		setSnakePositions(getSnakePositions())
-	}, [setSnakePositions, getSnakePositions])
+  useEffect(() => {
+    setApplePosition(getApplePosition())
+  }, [setApplePosition, getApplePosition])
 
-	useEffect(() => {
-		setApplePosition(getApplePosition())
-	}, [setApplePosition, getApplePosition])
-
-	return (
-		<div className="App" data-testid="app">
-			<div className="panel">
-				{blocks.map((block) => (
-					<Block key={block.id} apple={block.apple} snake={block.snake} />
-				))}
-			</div>
-		</div>
-	)
+  return (
+    <div className="App" data-testid="app">
+      <div className="panel">
+        {blocks.map((block) => (
+          <Block key={block.id} apple={block.apple} snake={block.snake} />
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default App
