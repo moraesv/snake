@@ -9,6 +9,7 @@ function Apple() {
             <div className="bottom1"></div>
             <div className="bottom2"></div>
             <div className="left"></div>
+            <div className="center"></div>
             <div className="right"></div>
         </div>
     );

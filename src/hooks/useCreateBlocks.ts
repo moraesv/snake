@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 
-const initialblocks = Array.apply(null, Array(400)).map((_, index) => ({ id: index, apple: false, snake: false }))
+const initialblocks = Array.apply(null, Array(225)).map((_, index) => ({ id: index, apple: false, snake: false }))
 
 
 export default function useCreateBlocks() {
@@ -10,10 +10,8 @@ export default function useCreateBlocks() {
 
     document.addEventListener('keydown', function (event) {
         if (event.keyCode == 37) {
-            alert('Left was pressed');
         }
         else if (event.keyCode == 39) {
-            alert('Right was pressed');
         }
     });
 
