@@ -74,64 +74,112 @@ export default function useCreateSnake({
 	}
 
 	const propagateStep = useCallback(
-		(node: Snake, toPosition: number): Snake => {
+		(
+			node: Snake,
+			toPosition: number,
+			toDirection: Snake["direction"]
+		): Snake => {
 			let next: Snake | undefined
-			if (node.next) next = propagateStep(node.next, node.position)
+			if (node.next)
+				next = propagateStep(node.next, node.position, node.direction)
 
-			return { ...node, position: toPosition, next: next }
+			return {
+				...node,
+				position: toPosition,
+				direction: toDirection,
+				next: next,
+			}
 		},
 		[]
+	)
+
+	const stopStepInterval = useCallback(() => {
+		clearInterval(snakeStepInterval.current)
+	}, [])
+
+	const checkColideBorders = useCallback(
+		(nextPosition: number, direction: Snake["direction"]) => {
+			if (nextPosition % 15 === 0 && direction === "right") {
+				stopStepInterval()
+				return true
+			}
+			if (nextPosition % 15 === 14 && direction === "left") {
+				stopStepInterval()
+				return true
+			}
+			if (nextPosition < 0 && direction === "up") {
+				stopStepInterval()
+				return true
+			}
+			if (nextPosition > 224 && direction === "down") {
+				stopStepInterval()
+				return true
+			}
+		},
+		[stopStepInterval]
 	)
 
 	const snakeStep = useCallback(() => {
 		setSnake((prevSnake) => {
 			const position = getPosition(prevSnake.direction)
+			const nextPosition = prevSnake.position + position
+
+			if (checkColideBorders(nextPosition, prevSnake.direction))
+				return prevSnake
 
 			let next: Snake | undefined
 			if (prevSnake.next)
-				next = propagateStep(prevSnake.next, prevSnake.position)
+				next = propagateStep(
+					prevSnake.next,
+					prevSnake.position,
+					prevSnake.direction
+				)
 
 			return {
 				...prevSnake,
-				position: prevSnake.position + position,
+				position: nextPosition,
 				next: next,
 			}
 		})
-	}, [propagateStep])
+	}, [propagateStep, checkColideBorders])
 
 	const startStepInterval = useCallback(() => {
 		const interval = setInterval(() => snakeStep(), 500)
 		snakeStepInterval.current = interval
 	}, [snakeStep])
 
-	const stopStepInterval = useCallback(() => {
-		clearInterval(snakeStepInterval.current)
-	}, [])
-
 	const changeSnakeDirection = useCallback(
 		(direction: Snake["direction"]) => {
 			setSnake((prevSnake) => {
 				if (!checkDirection(prevSnake.direction, direction)) return prevSnake
 
-				stopStepInterval()
-
 				const position = getPosition(direction)
+				const nextPosition = prevSnake.position + position
+
+				if (checkColideBorders(nextPosition, prevSnake.direction))
+					return prevSnake
+
+				stopStepInterval()
 
 				let next: Snake | undefined
 				if (prevSnake.next)
-					next = propagateStep(prevSnake.next, prevSnake.position)
+					next = propagateStep(
+						prevSnake.next,
+						prevSnake.position,
+						prevSnake.direction
+					)
 
 				startStepInterval()
 
 				return {
 					...prevSnake,
 					direction,
-					position: prevSnake.position + position,
+					position: nextPosition,
 					next: next,
 				}
 			})
 		},
-		[startStepInterval, stopStepInterval, propagateStep]
+		[startStepInterval, stopStepInterval, propagateStep, checkColideBorders]
 	)
 
 	const handleKeys = useCallback(
