@@ -13,7 +13,25 @@ const initialSnake: Snake = {
 	position: 0,
 	active: false,
 	direction: "right",
-	next: undefined,
+	next: {
+		node: 1,
+		position: 0,
+		active: false,
+		direction: "right",
+		next: {
+			node: 2,
+			position: 0,
+			active: false,
+			direction: "right",
+			next: {
+				node: 3,
+				position: 0,
+				active: false,
+				direction: "right",
+				next: undefined,
+			},
+		},
+	},
 }
 
 export default function useCreateSnake() {
@@ -66,12 +84,25 @@ export default function useCreateSnake() {
 		return true
 	}
 
+	const propagateStep = useCallback((node: Snake, toPosition: number): Snake => {
+		let next: Snake | undefined
+		if (node.next)
+			next = propagateStep(node.next, node.position)
+
+		return { ...node, position: toPosition, next: next }
+	}, [])
+
 	const snakeStep = useCallback(() => {
 		setSnake((prevSnake) => {
 			const position = getPosition(prevSnake.direction)
-			return { ...prevSnake, position: prevSnake.position + position }
+
+			let next: Snake | undefined
+			if (prevSnake.next)
+				next = propagateStep(prevSnake.next, prevSnake.position)
+
+			return { ...prevSnake, position: prevSnake.position + position, next: next }
 		})
-	}, [])
+	}, [propagateStep])
 
 	const startStepInterval = useCallback(() => {
 		const interval = setInterval(() => snakeStep(), 800)
@@ -91,11 +122,15 @@ export default function useCreateSnake() {
 
 			const position = getPosition(direction)
 
+			let next: Snake | undefined
+			if (prevSnake.next)
+				next = propagateStep(prevSnake.next, prevSnake.position)
+
 			startStepInterval()
 
-			return { ...prevSnake, direction, position: prevSnake.position + position }
+			return { ...prevSnake, direction, position: prevSnake.position + position, next: next }
 		})
-	}, [startStepInterval, stopStepInterval])
+	}, [startStepInterval, stopStepInterval, propagateStep])
 
 	const handleKeys = useCallback(
 		(event: KeyboardEvent) => {
