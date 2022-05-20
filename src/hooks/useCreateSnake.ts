@@ -21,7 +21,10 @@ const initialSnake: Snake = {
 	next: undefined,
 }
 
-export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProps) {
+export default function useCreateSnake({
+	apple,
+	onColideApple,
+}: CreateSnakeProps) {
 	const [snake, setSnake] = useState(initialSnake)
 	const snakeStepInterval = useRef<NodeJS.Timer>()
 
@@ -46,24 +49,23 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 		return position
 	}
 
-	function checkDirection(actualDirection: Snake["direction"], newDirection: Snake["direction"]) {
+	function checkDirection(
+		actualDirection: Snake["direction"],
+		newDirection: Snake["direction"]
+	) {
 		if (actualDirection === newDirection) return false
 		switch (newDirection) {
 			case "up":
-				if (actualDirection === 'down')
-					return false
+				if (actualDirection === "down") return false
 				break
 			case "down":
-				if (actualDirection === 'up')
-					return false
+				if (actualDirection === "up") return false
 				break
 			case "left":
-				if (actualDirection === 'right')
-					return false
+				if (actualDirection === "right") return false
 				break
 			case "right":
-				if (actualDirection === 'left')
-					return false
+				if (actualDirection === "left") return false
 				break
 			default:
 				return false
@@ -71,13 +73,15 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 		return true
 	}
 
-	const propagateStep = useCallback((node: Snake, toPosition: number): Snake => {
-		let next: Snake | undefined
-		if (node.next)
-			next = propagateStep(node.next, node.position)
+	const propagateStep = useCallback(
+		(node: Snake, toPosition: number): Snake => {
+			let next: Snake | undefined
+			if (node.next) next = propagateStep(node.next, node.position)
 
-		return { ...node, position: toPosition, next: next }
-	}, [])
+			return { ...node, position: toPosition, next: next }
+		},
+		[]
+	)
 
 	const snakeStep = useCallback(() => {
 		setSnake((prevSnake) => {
@@ -87,7 +91,11 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 			if (prevSnake.next)
 				next = propagateStep(prevSnake.next, prevSnake.position)
 
-			return { ...prevSnake, position: prevSnake.position + position, next: next }
+			return {
+				...prevSnake,
+				position: prevSnake.position + position,
+				next: next,
+			}
 		})
 	}, [propagateStep])
 
@@ -100,24 +108,31 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 		clearInterval(snakeStepInterval.current)
 	}, [])
 
-	const changeSnakeDirection = useCallback((direction: Snake["direction"]) => {
-		setSnake((prevSnake) => {
-			if (!checkDirection(prevSnake.direction, direction))
-				return prevSnake
+	const changeSnakeDirection = useCallback(
+		(direction: Snake["direction"]) => {
+			setSnake((prevSnake) => {
+				if (!checkDirection(prevSnake.direction, direction)) return prevSnake
 
-			stopStepInterval()
+				stopStepInterval()
 
-			const position = getPosition(direction)
+				const position = getPosition(direction)
 
-			let next: Snake | undefined
-			if (prevSnake.next)
-				next = propagateStep(prevSnake.next, prevSnake.position)
+				let next: Snake | undefined
+				if (prevSnake.next)
+					next = propagateStep(prevSnake.next, prevSnake.position)
 
-			startStepInterval()
+				startStepInterval()
 
-			return { ...prevSnake, direction, position: prevSnake.position + position, next: next }
-		})
-	}, [startStepInterval, stopStepInterval, propagateStep])
+				return {
+					...prevSnake,
+					direction,
+					position: prevSnake.position + position,
+					next: next,
+				}
+			})
+		},
+		[startStepInterval, stopStepInterval, propagateStep]
+	)
 
 	const handleKeys = useCallback(
 		(event: KeyboardEvent) => {
@@ -152,33 +167,39 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 		return positions
 	}, [snake])
 
-
 	const addNode = useCallback(() => {
-		setSnake(prev => {
+		setSnake((prev) => {
 			function loop(node: Snake): Snake {
 				if (node.next) {
 					return {
 						...node,
-						next: loop(node.next)
+						next: loop(node.next),
 					}
 				}
 
 				return {
-					...node, next: {
+					...node,
+					next: {
 						node: node.node + 1,
 						position: node.position,
 						active: false,
 						direction: "right",
 						next: undefined,
-					}
+					},
 				}
 			}
 
-
 			return loop(prev)
-
 		})
 	}, [setSnake])
+
+	const checkColideSelf = useCallback(() => {
+		const positions = getSnakePositions().slice(2)
+
+		if (positions.includes(snake.position)) {
+			stopStepInterval()
+		}
+	}, [snake, getSnakePositions, stopStepInterval])
 
 	useEffect(() => {
 		startStepInterval()
@@ -196,6 +217,10 @@ export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProp
 			addNode()
 		}
 	}, [snake, apple, onColideApple, addNode])
+
+	useEffect(() => {
+		checkColideSelf()
+	}, [checkColideSelf])
 
 	return { snake, getSnakePositions }
 }
