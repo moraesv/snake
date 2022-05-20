@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
+interface CreateSnakeProps {
+	apple: number | null
+	onColideApple: () => void
+}
+
 interface Snake {
 	node: number
 	position: number
@@ -13,28 +18,10 @@ const initialSnake: Snake = {
 	position: 0,
 	active: false,
 	direction: "right",
-	next: {
-		node: 1,
-		position: 0,
-		active: false,
-		direction: "right",
-		next: {
-			node: 2,
-			position: 0,
-			active: false,
-			direction: "right",
-			next: {
-				node: 3,
-				position: 0,
-				active: false,
-				direction: "right",
-				next: undefined,
-			},
-		},
-	},
+	next: undefined,
 }
 
-export default function useCreateSnake() {
+export default function useCreateSnake({ apple, onColideApple }: CreateSnakeProps) {
 	const [snake, setSnake] = useState(initialSnake)
 	const snakeStepInterval = useRef<NodeJS.Timer>()
 
@@ -105,7 +92,7 @@ export default function useCreateSnake() {
 	}, [propagateStep])
 
 	const startStepInterval = useCallback(() => {
-		const interval = setInterval(() => snakeStep(), 800)
+		const interval = setInterval(() => snakeStep(), 500)
 		snakeStepInterval.current = interval
 	}, [snakeStep])
 
@@ -165,6 +152,34 @@ export default function useCreateSnake() {
 		return positions
 	}, [snake])
 
+
+	const addNode = useCallback(() => {
+		setSnake(prev => {
+			function loop(node: Snake): Snake {
+				if (node.next) {
+					return {
+						...node,
+						next: loop(node.next)
+					}
+				}
+
+				return {
+					...node, next: {
+						node: node.node + 1,
+						position: node.position,
+						active: false,
+						direction: "right",
+						next: undefined,
+					}
+				}
+			}
+
+
+			return loop(prev)
+
+		})
+	}, [setSnake])
+
 	useEffect(() => {
 		startStepInterval()
 		return () => stopStepInterval()
@@ -174,6 +189,13 @@ export default function useCreateSnake() {
 		document.addEventListener("keydown", handleKeys)
 		return () => document.removeEventListener("keydown", handleKeys)
 	}, [handleKeys])
+
+	useEffect(() => {
+		if (snake.position === apple) {
+			onColideApple()
+			addNode()
+		}
+	}, [snake, apple, onColideApple, addNode])
 
 	return { snake, getSnakePositions }
 }

@@ -14,11 +14,15 @@ export default function useCreateApple() {
 
 	const getApplePosition = useCallback(() => apple, [apple])
 
-	const useInitApple = () =>
-		useEffect(() => {
-			randomApple()
-			return () => removeApple()
-		}, [])
+	const recreateApple = useCallback(() => {
+		removeApple()
+		randomApple()
+	}, [removeApple, randomApple])
 
-	return { apple, randomApple, removeApple, getApplePosition, useInitApple }
+	useEffect(() => {
+		randomApple()
+		return () => removeApple()
+	}, [randomApple, removeApple])
+
+	return { apple, randomApple, removeApple, recreateApple, getApplePosition }
 }

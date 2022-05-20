@@ -7,11 +7,8 @@ import useCreateSnake from "./hooks/useCreateSnake"
 
 function App() {
   const { blocks, setSnakePositions, setApplePosition } = useCreateBlocks()
-  const { getSnakePositions } =
-    useCreateSnake()
-  const { getApplePosition } = useCreateApple()
-
-  // useInitApple()
+  const { apple, getApplePosition, recreateApple } = useCreateApple()
+  const { getSnakePositions } = useCreateSnake({ apple, onColideApple: recreateApple })
 
   useEffect(() => {
     setSnakePositions(getSnakePositions())
